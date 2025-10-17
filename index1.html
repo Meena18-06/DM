@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Manager SPA</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background: #1e90ff;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 10px;
+      text-decoration: none;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    main {
+      padding: 1.5rem;
+    }
+    .task {
+      background: #f9f9f9;
+      padding: 1rem;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+    .task.completed {
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+    button {
+      background: #1e90ff;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0d6efd;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+      background: #f1f1f1;
+    }
+    @media (max-width: 600px) {
+      nav a {
+        display: block;
+        margin: 5px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Task Manager</h1>
+    <nav>
+      <a href="#dashboard" class="nav-link">Dashboard</a>
+      <a href="#tasks" class="nav-link">Tasks</a>
+      <a href="#profile" class="nav-link">Profile</a>
+    </nav>
+  </header>
+
+  <main id="app">
+    <!-- Dynamic content loads here -->
+  </main>
+
+  <footer>
+    <p>© 2025 YourApp</p>
+  </footer>
+
+  <script>
+    const app = document.getElementById('app');
+    const routes = {
+      '#dashboard': renderDashboard,
+      '#tasks': renderTasks,
+      '#profile': renderProfile
+    };
+
+    window.addEventListener('hashchange', router);
+    window.addEventListener('load', router);
+
+    function router() {
+      const hash = window.location.hash || '#dashboard';
+      if (routes[hash]) {
+        routes[hash]();
+      } else {
+        app.innerHTML = `<h2>404 - Page Not Found</h2>`;
+      }
+    }
+
+    function renderDashboard() {
+      app.innerHTML = `
+        <h2>Welcome to the Dashboard!</h2>
+        <p>Total tasks: ${tasks.length}</p>
+        <button onclick="addTaskPrompt()">Add New Task</button>
+      `;
+    }
+
+    let tasks = [
+      { id: 1, title: "Learn HTML", completed: false },
+      { id: 2, title: "Build SPA", completed: true }
+    ];
+
+    function renderTasks() {
+      app.innerHTML = `
+        <h2>Tasks</h2>
+        <button onclick="addTaskPrompt()">+ Add Task</button>
+        <div id="taskList">
+          ${tasks.map(task => `
+            <div class="task ${task.completed ? 'completed' : ''}">
+              <input type="checkbox" ${task.completed ? 'checked' : ''} 
+                onchange="toggleTask(${task.id})">
+              ${task.title}
+              <button onclick="deleteTask(${task.id})">Delete</button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderProfile() {
+      app.innerHTML = `
+        <h2>User Profile</h2>
+        <p>Name: V. Meena</p>
+        <p>Email: meena@example.com</p>
+        <button onclick="alert('Profile Updated!')">Update Profile</button>
+      `;
+    }
+
+    window.addTaskPrompt = function() {
+      const title = prompt("Enter new task:");
+      if (title) {
+        const newTask = { id: Date.now(), title, completed: false };
+        tasks.push(newTask);
+        renderTasks();
+      }
+    }
+
+    window.toggleTask = function(id) {
+      tasks = tasks.map(t =>
+        t.id === id ? { ...t, completed: !t.completed } : t
+      );
+      renderTasks();
+    }
+
+    window.deleteTask = function(id) {
+      if (confirm("Delete this task?")) {
+        tasks = tasks.filter(t => t.id !== id);
+        renderTasks();
+      }
+    }
+  </script>
+</body>
+</html>
